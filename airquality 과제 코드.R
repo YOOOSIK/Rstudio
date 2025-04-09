@@ -1,0 +1,36 @@
+library(tidyverse)
+##데이터셋 확인
+data(airquality)
+
+airquality
+help(airquality)
+head(airquality)
+class(airquality)
+str(airquality)
+colnames(airquality)
+mode(airquality)
+is.na(airquality)
+colnames(airquality)
+sum(is.na(airquality))
+sum(is.na(airquality$Ozone))
+sum(is.na(airquality$Solar.R))
+sum(is.na(airquality$Wind))
+sum(is.na(airquality$Temp))
+sum(is.na(airquality$Month))
+sum(is.na(airquality$Day))
+N_airquality<-na.omit(airquality)
+is.na(airquality)
+summary(N_airquality)
+library(VIM)
+S_airquality<-kNN(airquality, k=3)
+dim(S_airquality)
+dim(airquality)
+View(S_airquality)
+s_mean<-mean(S_airquality$Ozone)
+s_mean
+data("airquality")
+airquality_imputed <- apply(airquality, 2, function(x) {
+  ifelse(is.na(x), mean(x, na.rm = TRUE), x)
+})
+
+head(airquality_imputed)
