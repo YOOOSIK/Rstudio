@@ -44,21 +44,21 @@ abline(fit3)
 
 
 ##문제5
-class(state.x77)
+class(state.x77) ##데이터 확인
 attributes(state.x77)
 head(state.x77)
-st <- as.data.frame(state.x77[,c("Income","Illiteracy","Murder","Frost")])
+st <- as.data.frame(state.x77[,c("Income","Illiteracy","Murder","Frost")]) ##매트릭스를 데이터 프레임으로 변환
 ##상관관계 그림 그리기
 library(psych)
-cor.plot(st)
-fit<-lm(st$Murder~st$Income+st$Illiteracy+st$Frost)
-summary(fit)
-st2 <- as.data.frame(state.x77[,c("Population","Income","Illiteracy","Murder","Frost")])
-fit2<-lm(st2$Murder~st2$Population+st2$Income+st2$Illiteracy+st2$Frost)
-op<-par(mfrow = c(2,2))
+cor.plot(st) ##변수간의 상관계수를 시각화 
+fit<-lm(st$Murder~st$Income+st$Illiteracy+st$Frost) ##살인율을 소득 문맹률 서리일수로 예측
+summary(fit) ## 회귀계수 R* p-value
+st2 <- as.data.frame(state.x77[,c("Population","Income","Illiteracy","Murder","Frost")]) ##비교용 회귀모델 추가
+fit2<-lm(st2$Murder~st2$Population+st2$Income+st2$Illiteracy+st2$Frost) 
+op<-par(mfrow = c(2,2)) ##회귀진단 기본 그래프 출력 
 plot(fit2)
 par(op)
-outlierTest(fit2)
+outlierTest(fit2) 
 qqPlot(fit2, labels= row.names(states2), simulate = T)
 rownames(st2)
 fit3 <- lm(Murder~Population+Income+Illiteracy+Frost, data=st2[-28,])
