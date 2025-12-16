@@ -1,0 +1,170 @@
+import numpy as np
+import matplotlib.pyplot as plt
+print("\n" + "="*60)
+print("K-POP 그룹을 벡터로 표현하고 유사도 비교하기")
+print("="*60)
+
+def cosine_sim(v1, v2):
+    norm1 = np.linalg.norm(v1)
+    norm2 = np.linalg.norm(v2)
+    if norm1 == 0 or norm2 == 0:
+        return 0
+    return np.dot(v1, v2) / (norm1 * norm2)
+
+kpop_groups = {
+    "BabyMonster": [10, 10],      
+    "KissOfLife": [9, 8],      
+    "All Day Project": [8, 9]       
+}
+
+print("\nK-POP 그룹 벡터:")
+for name, vec in kpop_groups.items():
+    print(f"  {name}: {vec}")
+
+group_names = list(kpop_groups.keys())
+best_pair = None
+best_similarity = -1  
+
+print("\n[실습] 그룹 쌍별 코사인 유사도:")
+for i in range(len(group_names)):
+    for j in range(i + 1, len(group_names)):
+        g1 = group_names[i]
+        g2 = group_names[j]
+        v1 = kpop_groups[g1]
+        v2 = kpop_groups[g2]
+        sim = cosine_sim(v1, v2)
+        print(f"  {g1} ↔ {g2}: {sim:.3f}")
+        if sim > best_similarity:
+            best_similarity = sim
+            best_pair = (g1, g2)
+
+print("\n가장 비슷한 두 그룹:")
+if best_pair:
+    print(f"  {best_pair[0]} ↔ {best_pair[1]} (코사인 유사도: {best_similarity:.3f})")
+plt.figure(figsize=(8, 6))
+
+for name, vec in kpop_groups.items():
+    x, y = vec
+    plt.scatter(x, y, s=300, alpha=0.8, edgecolors='white', linewidth=2)
+    plt.annotate(name, (x, y), xytext=(0, 10), textcoords='offset points', 
+                 fontsize=12, ha='center', va='bottom', fontweight='bold')
+
+plt.xlabel("노래 (Vocal)", fontsize=12)
+plt.ylabel("춤 (Dance)", fontsize=12)
+plt.title("K-POP 그룹 [노래, 춤] 벡터 시각화", fontsize=14, fontweight='bold')
+plt.grid(True, alpha=0.3, linestyle='--')
+plt.xlim(0, 12)
+plt.ylim(0, 12)
+plt.tight_layout()
+plt.show()
+
+
+
+
+
+
+!sudo apt-get install -y fonts-nanum
+!sudo fc-cache -fv
+!rm ~/.cache/matplotlib -rf
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+print("\n" + "="*60)
+print("도전 2: 5가지 음식 리뷰 취향 분석")
+print("="*60)
+
+def cosine_sim(v1, v2):
+    norm1 = np.linalg.norm(v1)
+    norm2 = np.linalg.norm(v2)
+    if norm1 == 0 or norm2 == 0:
+        return 0
+    return np.dot(v1, v2) / (norm1 * norm2)
+friends_reviews = {
+    "케이크": "케이크는 언제나 달콤하고 언제나 부드럽고 자신을 배신하지 않는다",
+    "케밥": "그냥 개 맛있음",
+    "떡볶이": "쫀득하기때문에",
+    "삼겹살": "이것도 맛있음",
+    "햄버거": "완벽한 탄단지 비율 먹고 치우기 완벽함 주변에서 쉽게 접함"
+}
+
+print("\n리뷰 목록:")
+for name, review in friends_reviews.items():
+    print(f"  {name}: {review}")
+all_food_words = []
+for review in friends_reviews.values():
+    all_food_words.extend(review.split())
+
+vocab = sorted(set(all_food_words))
+print(f"(총 {len(vocab)}개 단어)\n")
+friend_vectors = {}
+print("각 리뷰의 벡터 표현:")
+
+for name, review in friends_reviews.items():
+    words = review.split()
+    vector = [words.count(word) for word in vocab]
+    friend_vectors[name] = vector
+    print(f"\n{name}")
+    meaning_str = []
+    for i, word in enumerate(vocab):
+        if vector[i] > 0:
+            meaning_str.append(f"{word}({vector[i]})")
+    print(f" 포함된 단어: {', '.join(meaning_str)}")
+
+friend_names = list(friends_reviews.keys())
+max_similarity = -1
+most_similar_pair = None
+
+print("\n[실습] 쌍별 코사인 유사도:")
+found_similarity = False 
+
+for i in range(len(friend_names)):
+    for j in range(i + 1, len(friend_names)):
+        f1 = friend_names[i]
+        f2 = friend_names[j]
+        v1 = friend_vectors[f1]
+        v2 = friend_vectors[f2]
+        
+        sim = cosine_sim(v1, v2)
+        print(f"  {f1} ↔ {f2}: {sim:.3f}")
+        
+        if sim > max_similarity:
+            max_similarity = sim
+            most_similar_pair = (f1, f2)
+        
+        if sim > 0:
+            found_similarity = True
+
+print("\n분석 결과:")
+if found_similarity and most_similar_pair:
+    print(f"  가장 비슷한 리뷰: {most_similar_pair[0]} ↔ {most_similar_pair[1]}")
+    print(f"  (코사인 유사도: {max_similarity:.3f})")
+else:
+    print("  겹치는 단어 없음")
+n = len(friend_names)
+similarity_matrix = np.zeros((n, n))
+
+for i in range(n):
+    for j in range(n):
+        v1 = friend_vectors[friend_names[i]]
+        v2 = friend_vectors[friend_names[j]]
+        similarity_matrix[i][j] = cosine_sim(v1, v2)
+
+plt.rcParams['font.family'] = 'Malgun Gothic' 
+plt.rcParams['axes.unicode_minus'] = False
+
+plt.figure(figsize=(8, 6))
+plt.imshow(similarity_matrix, cmap='YlOrRd', aspect='auto')
+plt.colorbar(label='Cosine Similarity')
+plt.xticks(range(n), friend_names, rotation=45)
+plt.yticks(range(n), friend_names)
+plt.title('음식 리뷰 유사도 Heatmap', fontsize=14, fontweight='bold')
+
+for i in range(n):
+    for j in range(n):
+        plt.text(j, i, f"{similarity_matrix[i][j]:.2f}",
+                 ha='center', va='center',
+                 color='black' if similarity_matrix[i][j] < 0.5 else 'white')
+
+plt.tight_layout()
+plt.show()
